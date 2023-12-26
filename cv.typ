@@ -8,6 +8,7 @@
 //#let bodyfont = "Linux Libertine"   // Set font for body
 //#let fontsize = 10pt // 10pt, 11pt, 12pt
 //#let linespacing = 6pt
+//#let headingsmallcaps = false
 
 //#let showAddress = true // true/false Show address in contact info
 //#let showNumber = true  // true/false Show phone number in contact info
@@ -49,7 +50,11 @@
     ): it => block(width: 100%)[
         #set align(left)
         #set text(font: uservars.headingfont, size: 1em, weight: "bold")
-        #upper(it.body)
+        #if (uservars.at("headingsmallcaps", default:false)) {
+            smallcaps(it.body)
+        } else {
+            upper(it.body)
+        }
         #v(-0.75em) #line(length: 100%, stroke: 1pt + black) // Draw a line
     ]
 
@@ -58,7 +63,11 @@
         level: 1,
     ): it => block(width: 100%)[
         #set text(font: uservars.headingfont, size: 1.5em, weight: "bold")
-        #upper(it.body)
+        #if (uservars.at("headingsmallcaps", default:false)) {
+            smallcaps(it.body)
+        } else {
+            upper(it.body)
+        }
         #v(2pt)
     ]
 
