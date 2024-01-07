@@ -1,1 +1,2 @@
-# cv.pdf
+# Ignore compiled PDFs
+*.pdf
