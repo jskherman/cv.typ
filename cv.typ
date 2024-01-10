@@ -159,7 +159,7 @@
                 ]
                 // Line 2: Degree and Date Range
                 #text(style: "italic")[#edu.studyType in #edu.area] #h(1fr)
-                #start #sym.dash.en #end \
+                #utils.daterange(start, end) \
                 #eval(edu-items, mode: "markup")
             ]
         }
@@ -184,7 +184,7 @@
                 ]
                 // Line 2: Degree and Date Range
                 #text(style: "italic")[#w.position] #h(1fr)
-                #start #sym.dash.en #end \
+                #utils.daterange(start, end) \
                 // Highlights or Description
                 #for hi in w.highlights [
                     - #eval(hi, mode: "markup")
@@ -213,7 +213,7 @@
                 ]
                 // Line 2: Degree and Date Range
                 #text(style: "italic")[#org.position] #h(1fr)
-                #start #sym.dash.en #end \
+                #utils.daterange(start, end) \
                 // Highlights or Description
                 #if org.highlights != none {
                     for hi in org.highlights [
@@ -242,7 +242,7 @@
                     *#project.name* \
                 ]
                 // Line 2: Degree and Date Range
-                #text(style: "italic")[#project.affiliation]  #h(1fr) #start #sym.dash.en #end \
+                #utils.daterange(start, end) \
                 // Summary or Description
                 #for hi in project.highlights [
                     - #eval(hi, mode: "markup")
