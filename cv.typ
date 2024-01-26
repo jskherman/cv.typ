@@ -74,7 +74,7 @@
     #let profiles = (
         box(link("mailto:" + info.personal.email)),
         if uservars.showNumber {box(link("tel:" + info.personal.phone))} else {none},
-        if info.personal.url != none {
+        if info.at("personal.url", default: none) != none {
             box(link(info.personal.url)[#info.personal.url.split("//").at(1)])
         }
     ).filter(it => it != none) // filter out none elements from the profile array
@@ -102,12 +102,12 @@
 }
 
 #let cvwork(info, isbreakable: true) = {
-    if info.work != none {block[
+    if info.at("work", default: none) != none {block[
         == Work Experience
         #for w in info.work {
             block(width: 100%, breakable: isbreakable)[
                 // line 1: company and location
-                #if w.url != none [
+                #if w.at("url", default: none) != none [
                     *#link(w.url)[#w.organization]* #h(1fr) *#w.location* \
                 ] else [
                     *#w.organization* #h(1fr) *#w.location* \
@@ -136,16 +136,16 @@
 }
 
 #let cveducation(info, isbreakable: true) = {
-    if info.education != none {block[
+    if info.at("education", default: none) != none {block[
         == Education
         #for edu in info.education {
             let start = utils.strpdate(edu.startDate)
             let end = utils.strpdate(edu.endDate)
 
             let edu-items = ""
-            if edu.honors != none {edu-items = edu-items + "- *Honors*: " + edu.honors.join(", ") + "\n"}
-            if edu.courses != none {edu-items = edu-items + "- *Courses*: " + edu.courses.join(", ") + "\n"}
-            if edu.highlights != none {
+            if edu.at("honors", default: none) != none {edu-items = edu-items + "- *Honors*: " + edu.honors.join(", ") + "\n"}
+            if edu.at("courses", default: none) != none {edu-items = edu-items + "- *Courses*: " + edu.courses.join(", ") + "\n"}
+            if edu.at("highlights", default: none) != none {
                 for hi in edu.highlights {
                     edu-items = edu-items + "- " + hi + "\n"
                 }
@@ -155,7 +155,7 @@
             // create a block layout for each education entry
             block(width: 100%, breakable: isbreakable)[
                 // line 1: institution and location
-                #if edu.url != none [
+                #if edu.at("url", default: none) != none [
                     *#link(edu.url)[#edu.institution]* #h(1fr) *#edu.location* \
                 ] else [
                     *#edu.institution* #h(1fr) *#edu.location* \
@@ -170,7 +170,7 @@
 }
 
 #let cvaffiliations(info, isbreakable: true) = {
-    if info.affiliations != none {block[
+    if info.at("affiliations", default: none) != none {block[
         == Leadership & Activities
         #for org in info.affiliations {
             // parse ISO date strings into datetime objects
@@ -180,7 +180,7 @@
             // create a block layout for each affiliation entry
             block(width: 100%, breakable: isbreakable)[
                 // line 1: organization and location
-                #if org.url != none [
+                #if org.at("url", default: none) != none [
                     *#link(org.url)[#org.organization]* #h(1fr) *#org.location* \
                 ] else [
                     *#org.organization* #h(1fr) *#org.location* \
@@ -189,7 +189,7 @@
                 #text(style: "italic")[#org.position] #h(1fr)
                 #start #sym.dash.en #end \
                 // highlights or description
-                #if org.highlights != none {
+                #if org.at("highlights", default: none) != none {
                     for hi in org.highlights [
                         - #eval(hi, mode: "markup")
                     ]
@@ -200,7 +200,7 @@
 }
 
 #let cvprojects(info, isbreakable: true) = {
-    if info.projects != none {block[
+    if info.at("projects", default: none) != none {block[
         == Projects
         #for project in info.projects {
             // parse ISO date strings into datetime objects
@@ -209,7 +209,7 @@
             // create a block layout for each project entry
             block(width: 100%, breakable: isbreakable)[
                 // line 1: project name
-                #if project.url != none [
+                #if project.at("url", default: none) != none [
                     *#link(project.url)[#project.name]* \
                 ] else [
                     *#project.name* \
@@ -226,7 +226,7 @@
 }
 
 #let cvawards(info, isbreakable: true) = {
-    if info.awards != none {block[
+    if info.at("awards", default: none) != none {block[
         == Honors & Awards
         #for award in info.awards {
             // parse ISO date strings into datetime objects
@@ -234,7 +234,7 @@
             // create a block layout for each award entry
             block(width: 100%, breakable: isbreakable)[
                 // line 1: award title and location
-                #if award.url != none [
+                #if award.at("url", default: none) != none [
                     *#link(award.url)[#award.title]* #h(1fr) *#award.location* \
                 ] else [
                     *#award.title* #h(1fr) *#award.location* \
@@ -242,7 +242,7 @@
                 // line 2: issuer and date
                 Issued by #text(style: "italic")[#award.issuer]  #h(1fr) #date \
                 // summary or description
-                #if award.highlights != none {
+                #if award.at("highlights", default: none) != none {
                     for hi in award.highlights [
                         - #eval(hi, mode: "markup")
                     ]
@@ -253,7 +253,7 @@
 }
 
 #let cvcertificates(info, isbreakable: true) = {
-    if info.certificates != none {block[
+    if info.at("certificates", default: none) != none {block[
         == Licenses & Certifications
 
         #for cert in info.certificates {
@@ -262,7 +262,7 @@
             // create a block layout for each certificate entry
             block(width: 100%, breakable: isbreakable)[
                 // line 1: certificate name
-                #if cert.url != none [
+                #if cert.at("url", default: none) != none [
                     *#link(cert.url)[#cert.name]* \
                 ] else [
                     *#cert.name* \
@@ -275,7 +275,7 @@
 }
 
 #let cvpublications(info, isbreakable: true) = {
-    if info.publications != none {block[
+    if info.at("publications", default: none) != none {block[
         == Research & Publications
         #for pub in info.publications {
             // parse ISO date strings into datetime objects
@@ -283,7 +283,7 @@
             // create a block layout for each publication entry
             block(width: 100%, breakable: isbreakable)[
                 // line 1: publication title
-                #if pub.url != none [
+                #if pub.at("url", default: none) != none [
                     *#link(pub.url)[#pub.name]* \
                 ] else [
                     *#pub.name* \
@@ -296,32 +296,33 @@
 }
 
 #let cvskills(info, isbreakable: true) = {
-    if (info.languages != none) or (info.skills != none) or (info.interests != none) {block(breakable: isbreakable)[
+    if (info.at("languages", default: none) != none) or (info.at("skills", default: none) != none) or (info.at("interests", default: none) != none) {
+      block(breakable: isbreakable)[
         == Skills, Languages, Interests
-        #if (info.languages != none) [
+        #if (info.at("languages", default: none) != none) [
             #let langs = ()
             #for lang in info.languages {
                 langs.push([#lang.language (#lang.fluency)])
             }
             - *Languages*: #langs.join(", ")
         ]
-        #if (info.skills != none) [
+        #if (info.at("skills", default: none) != none) [
             #for group in info.skills [
                 - *#group.category*: #group.skills.join(", ")
             ]
         ]
-        #if (info.interests != none) [
+        #if (info.at("interests", default: none) != none) [
             - *Interests*: #info.interests.join(", ")
         ]
     ]}
 }
 
 #let cvreferences(info, isbreakable: true) = {
-    if info.references != none {block[
+    if info.at("references", default: none) != none {block[
         == References
         #for ref in info.references {
             block(width: 100%, breakable: isbreakable)[
-                #if ref.url != none [
+                #if ref.at("url", default: none) != none [
                     - *#link(ref.url)[#ref.name]*: "#ref.reference"
                 ] else [
                     - *#ref.name*: "#ref.reference"
