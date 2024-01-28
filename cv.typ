@@ -50,7 +50,7 @@
   doc
 }
 
-#let line_one(left: none, right: none, url: none) = {
+#let line_one(left, right: none, url: none) = {
   if url != none {
     if right != none {
       [*#link(url, left)* #h(1fr) *#right*]
@@ -66,11 +66,11 @@
   }
 }
 
-#let line_two(left: none, right_start: none, right_end: none) = {
-  if right_end != none {
+#let line_two(left, right_start: none, right_end: none) = {
+  if right_start != none {
     [#text(style: "italic", left) #h(1fr) #right_start #sym.dash.en #right_end]
   } else {
-    [#text(style: "italic", left) #h(1fr) #right_start]
+    [#text(style: "italic", left) #h(1fr) #right_end]
   }
 }
 
@@ -141,17 +141,20 @@
         let url = w.at("url", default: none)
         let location = w.location
 
-        line_one(left: company, right: location, url: url)
+        line_one(company, right: location, url: url)
 
         let index = 0
         for p in w.positions {
-          let start = utils.strpdate(p.startDate)
-          let end = utils.strpdate(p.endDate)
+          let start = p.at("startDate", default: none)
+          if start != none {
+            start = utils.str_to_date(start)
+          }
+          let end = utils.str_to_date(p.endDate)
 
           if index != 0 { v(0.5em) }
 
           block(above: 0.5em, {
-            line_two(left: p.position, right_start: start, right_end: end)
+            line_two(p.position, right_start: start, right_end: end)
           })
 
           for hi in p.highlights {
@@ -171,18 +174,21 @@
       [== Education]
 
       for edu in info.education {
-        let start = utils.strpdate(edu.startDate)
-        let end = utils.strpdate(edu.endDate)
+        let start = edu.at("startDate", default: none)
+        if start != none {
+          start = utils.str_to_date(start)
+        }
+        let end = utils.str_to_date(edu.endDate)
 
         let left = [#edu.studyType in #edu.area]
         let url = edu.at("url", default: none)
 
         block(width: 100%, breakable: isbreakable, {
           // line 1: institution and location
-          line_one(left: edu.institution, right: edu.location, url: edu.url)
+          line_one(edu.institution, right: edu.location, url: edu.url)
           linebreak()
           // line 2: degree and date
-          line_two(left: left, right_start: start, right_end: end)
+          line_two(left, right_start: start, right_end: end)
           let honors = edu.at("honors", default: ())
           dot_list("Honors", honors)
 
@@ -202,63 +208,63 @@
 
 #let cvaffiliations(info, isbreakable: true) = {
   if info.at("affiliations", default: none) != none {
-    block(
-      {
-        [== Leadership & Activities]
+    block({
+      [== Leadership & Activities]
 
-        for org in info.affiliations {
-          let url = org.at("url", default: none)
-          let start = utils.strpdate(org.startDate)
-          let end = utils.strpdate(org.endDate)
-
-          block(width: 100%, breakable: isbreakable, {
-            // line 1: organization and location
-            line_one(left: org.organization, right: org.location, url: org.url)
-
-            linebreak()
-            // line 2: position and date
-            line_two(left: org.position, right_start: start, right_end: end)
-
-            if org.at("highlights", default: none) != none {
-              for h in org.highlights {
-                [- #h]
-              }
-            }
-          })
+      for org in info.affiliations {
+        let url = org.at("url", default: none)
+        let start = org.at("startDate", default: none)
+        if start != none {
+          start = utils.str_to_date(start)
         }
-      },
-    )
+        let end = utils.str_to_date(org.endDate)
+
+        block(width: 100%, breakable: isbreakable, {
+          // line 1: organization and location
+          line_one(org.organization, right: org.location, url: org.url)
+
+          linebreak()
+          // line 2: position and date
+          line_two(org.position, right_start: start, right_end: end)
+
+          if org.at("highlights", default: none) != none {
+            for h in org.highlights {
+              [- #h]
+            }
+          }
+        })
+      }
+    })
   }
 }
 
 #let cvprojects(info, isbreakable: true) = {
   if info.at("projects", default: none) != none {
-    block(
-      {
-        [== Projects]
+    block({
+      [== Projects]
 
-        for project in info.projects {
-          let url = project.at("url", default: none)
-          let start = utils.strpdate(project.startDate)
-          let end = utils.strpdate(project.endDate)
-
-          block(
-            width: 100%, breakable: isbreakable, {
-              // line 1: project name
-              line_one(left: project.name, url: url)
-
-              linebreak()
-              // line 2: organization and date
-              line_two(left: project.affiliation, right_start: start, right_end: end)
-
-              for h in project.highlights {
-                [- #h]
-              }
-            },
-          )
+      for project in info.projects {
+        let url = project.at("url", default: none)
+        let start = project.at("startDate", default: none)
+        if start != none {
+          start = utils.str_to_date(start)
         }
-      },
-    )
+        let end = utils.str_to_date(project.endDate)
+
+        block(width: 100%, breakable: isbreakable, {
+          // line 1: project name
+          line_one(project.name, url: url)
+
+          linebreak()
+          // line 2: organization and date
+          line_two(project.affiliation, right_start: start, right_end: end)
+
+          for h in project.highlights {
+            [- #h]
+          }
+        })
+      }
+    })
   }
 }
 
@@ -268,15 +274,15 @@
       [== Honors & Awards]
       for award in info.awards {
         let url = award.at("url", default: none)
-        let date = utils.strpdate(award.date)
+        let date = utils.str_to_date(award.date)
 
         block(width: 100%, breakable: isbreakable, {
           // line 1: award title and location
-          line_one(left: award.title, right: award.location, url: url)
+          line_one(award.title, right: award.location, url: url)
 
           linebreak()
           // line 2: issuer and date
-          line_two(left: award.issuer, right_start: date)
+          line_two(award.issuer, right_end: date)
 
           if award.at("highlights", default: none) != none {
             for h in award.highlights {
@@ -296,15 +302,15 @@
 
       for cert in info.certificates {
         let url = cert.at("url", default: none)
-        let date = utils.strpdate(cert.date)
+        let date = utils.str_to_date(cert.date)
 
         block(width: 100%, breakable: isbreakable, {
           // line 1: certificate name
-          line_one(left: cert.name, url: cert.url)
+          line_one(cert.name, url: cert.url)
 
           linebreak()
           // line 2: issuer and date
-          line_two(left: cert.issuer, right_start: date)
+          line_two(cert.issuer, right_end: date)
         })
       }
     })
@@ -318,15 +324,15 @@
 
       for pub in info.publications {
         let url = pub.at("url", default: none)
-        let date = utils.strpdate(pub.releaseDate)
+        let date = utils.str_to_date(pub.releaseDate)
 
         block(width: 100%, breakable: isbreakable, {
           // line 1: publication title
-          line_one(left: pub.name, url: url)
+          line_one(pub.name, url: url)
 
           linebreak()
           // line 2: publisher and date
-          [Published on #line_two(left: pub.publisher, right_start: date)]
+          [Published on #line_two(pub.publisher, right_end: date)]
         })
       }
     })
