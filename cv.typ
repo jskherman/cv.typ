@@ -85,9 +85,18 @@
 // address
 #let addresstext(info, uservars) = {
   if uservars.showAddress {
-    block(
-      width: 100%, [#info.personal.location.city, #info.personal.location.region, #info.personal.location.country #info.personal.location.postalCode],
-    )
+    let address_line = ()
+    let location = info.personal.at("location")
+
+    for key in ("city", "region", "country") {
+      let value = location.at(key, default: none)
+      if value != none and value != "" {
+        address_line.push([#location.at(key, default: none)])
+      }
+    }
+
+    [#address_line.join(", ") #location.postalCode]
+
     v(-0.5em)
   }
 }
